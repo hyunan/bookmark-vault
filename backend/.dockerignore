@@ -1,0 +1,17 @@
+target/
+*.jar
+
+.idea/
+.vscode/
+*.swp
+*.log
+.DS_Store
+
+.git
+.gitignore
+
+.env
+
+Dockerfile
+docker-compose*
+.dockerignore
