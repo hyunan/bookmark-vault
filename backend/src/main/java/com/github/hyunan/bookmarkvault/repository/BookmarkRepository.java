@@ -15,4 +15,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
     void removeBookmarksByUserIdAndBookmarkId(Integer userId, Integer bookmarkId);
 
     void removeAllByUserId(Integer userId);
+
+    List<Bookmark> findAllByUserIdAndBookmarkNameContainingIgnoreCase(Integer userId, String bookmarkName);
 }
