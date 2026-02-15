@@ -4,6 +4,7 @@ import com.github.hyunan.bookmarkvault.dto.TokenDTO;
 import com.github.hyunan.bookmarkvault.dto.UserDTO;
 import com.github.hyunan.bookmarkvault.entity.User;
 import com.github.hyunan.bookmarkvault.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,5 +49,12 @@ public class UserService {
         User newUser = new User(username, hashedPassword);
         userRepository.save(newUser);
         return 0;
+    }
+
+    @Transactional
+    public void deleteUser(String username) {
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.deleteUserById(user.getId());
     }
 }

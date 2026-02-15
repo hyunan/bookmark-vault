@@ -2,22 +2,26 @@ package com.github.hyunan.bookmarkvault.controller;
 
 import com.github.hyunan.bookmarkvault.dto.TokenDTO;
 import com.github.hyunan.bookmarkvault.dto.UserDTO;
-import com.github.hyunan.bookmarkvault.entity.User;
+import com.github.hyunan.bookmarkvault.service.AuthService;
+import com.github.hyunan.bookmarkvault.service.JwtService;
 import com.github.hyunan.bookmarkvault.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final AuthService authService;
+    private final JwtService jwtService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService, JwtService jwtService) {
         this.userService = userService;
+        this.authService = authService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/signup")
@@ -42,5 +46,18 @@ public class UserController {
             );
         return ResponseEntity.ok(Map.of("username", userDTO.getUsername(),
                 "token", tokenDTO.getJwtToken(), "expiresIn:", tokenDTO.getJwtExpiration()));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser(@RequestHeader(value = "Authorization") String bearerToken) {
+        if (!authService.isAuthorized(bearerToken))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "user not authorized"));
+        String token = bearerToken.substring("Bearer ".length());
+        try {
+            userService.deleteUser(jwtService.extractUsernameFromToken(token));
+            return ResponseEntity.ok().body(Map.of("success", "user deleted successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+        }
     }
 }
