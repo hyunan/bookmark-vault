@@ -1,6 +1,7 @@
 package com.github.hyunan.bookmarkvault.controller;
 
 import com.github.hyunan.bookmarkvault.dto.BookmarkDTO;
+import com.github.hyunan.bookmarkvault.entity.Bookmark;
 import com.github.hyunan.bookmarkvault.service.AuthService;
 import com.github.hyunan.bookmarkvault.service.BookmarkService;
 import com.github.hyunan.bookmarkvault.service.JwtService;
@@ -117,6 +118,20 @@ public class BookmarkController {
         try {
             bookmarkService.updateBookmark(jwtService.extractUsernameFromToken(token), bookmarkId, bookmarkDTO);
             return ResponseEntity.ok().body(Map.of("success", "edited bookmark"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchBookmarks(@RequestHeader(value = "Authorization") String bearerToken,
+                                             @RequestParam(name = "q") String query) {
+        if (!authService.isAuthorized(bearerToken))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "user not authorized"));
+        String token = bearerToken.substring("Bearer ".length());
+        try {
+            List<Bookmark> bookmarksList = bookmarkService.searchBookmarkByKeyword(jwtService.extractUsernameFromToken(token), query);
+            return ResponseEntity.ok().body(Map.of("success", bookmarksList));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
         }

@@ -107,4 +107,10 @@ public class BookmarkService {
             throw new RuntimeException("Bookmark not found");
         }
     }
+
+    public List<Bookmark> searchBookmarkByKeyword(String username, String query) {
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return bookmarkRepository.findAllByUserIdAndBookmarkNameContainingIgnoreCase(user.getId(), query);
+    }
 }
