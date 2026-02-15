@@ -1,9 +1,26 @@
-###
+### login user with username and password
 POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
 {
-  "username": "john",
-  "password": "bruh bruh bruh"
+  "username": "hanwoo",
+  "password": "secury_password_totally"
 }
+### create user with username and password
+POST http://localhost:8080/api/users/signup
+Content-Type: application/json
+
+{
+  "username": "hanwoo",
+  "password": "secury_password_totally"
+}
+
+### delete user with username and password
+
 ###
+GET http://localhost:8080/api/bookmarks/hello
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW53b28iLCJleHAiOjE3NzExMzUxNzh9.0D6F8E0xc5y1zq6I8f1wFzXaAADbRONbqBTmesF1IwHPuNm2MAS0zglZ063vweng763FxKiZu4yT-fcBl2ldzA
+
+###
+GET http://localhost:8080/api/bookmarks/hello
+Authorization: Bearer hehehehe
