@@ -1,5 +1,7 @@
 package com.github.hyunan.bookmarkvault.service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -42,6 +44,18 @@ public class JwtService {
             return true;
         } catch (JwtException e) {
             return false;
+        }
+    }
+
+    public String extractUsernameFromToken(String jws) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parser()
+                    .verifyWith((SecretKey) getSigningKey())
+                    .build()
+                    .parseSignedClaims(jws);
+            return claimsJws.getPayload().getSubject();
+        } catch (JwtException e) {
+            return null;
         }
     }
 }

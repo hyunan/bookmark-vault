@@ -1,3 +1,4 @@
+# testing requests
 ### login user with username and password
 POST http://localhost:8080/api/users/login
 Content-Type: application/json
@@ -15,12 +16,46 @@ Content-Type: application/json
   "password": "secury_password_totally"
 }
 
-### delete user with username and password
+### delete user
+DELETE http://localhost:8080/api/users/delete
+Authorization: Bearer probably_wont_work
 
-###
+### check authentication works
 GET http://localhost:8080/api/bookmarks/hello
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW53b28iLCJleHAiOjE3NzExMzUxNzh9.0D6F8E0xc5y1zq6I8f1wFzXaAADbRONbqBTmesF1IwHPuNm2MAS0zglZ063vweng763FxKiZu4yT-fcBl2ldzA
+Authorization: Bearer probably_wont_work
 
-###
+### if wrong bearer then it doesnt work
 GET http://localhost:8080/api/bookmarks/hello
 Authorization: Bearer hehehehe
+
+### can get bookmarks
+GET http://localhost:8080/api/bookmarks/viewBookmarks
+Authorization: Bearer probably_wont_work
+
+### add bookmarks
+POST http://localhost:8080/api/bookmarks/add
+Authorization: Bearer probably_wont_work
+Content-Type: application/json
+
+{
+  "bookmarkName": "test",
+  "bookmarkLink": "https://www.google.com"
+}
+
+### edit bookmarks
+PUT http://localhost:8080/api/bookmarks/edit/1
+Authorization: Bearer probably_wont_work
+Content-Type: application/json
+
+{
+  "bookmarkName": "no way",
+  "bookmarkLink": "ahahaahahahah"
+}
+
+### delete all bookmarks
+DELETE http://localhost:8080/api/bookmarks/deleteAll
+Authorization: Bearer probably_wont_work
+
+### delete one bookmark
+DELETE http://localhost:8080/api/bookmarks/delete/2
+Authorization: Bearer probably_wont_work
