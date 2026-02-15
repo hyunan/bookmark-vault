@@ -1,5 +1,6 @@
 package com.github.hyunan.bookmarkvault.controller;
 
+import com.github.hyunan.bookmarkvault.dto.TokenDTO;
 import com.github.hyunan.bookmarkvault.dto.UserDTO;
 import com.github.hyunan.bookmarkvault.entity.User;
 import com.github.hyunan.bookmarkvault.service.UserService;
@@ -19,17 +20,27 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody(required = true)UserDTO userDTO) {
-        Optional<User> user = userService.getUserByUsername(userDTO.getUsername());
-        if (user.isPresent())
-            return ResponseEntity.ok(Map.of("msg", userDTO.getPassword(), "msg2", user.get().getPassword()));
-        String errorMsg = "user: " + userDTO.getUsername() + " not found";
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("msg", errorMsg));
+    @PostMapping("/signup")
+    public ResponseEntity<?> signupUser(@RequestBody UserDTO userDTO) {
+        int success = userService.createUser(userDTO);
+        if (success == 0)
+            return ResponseEntity.ok(Map.of("success", "User " + userDTO.getUsername() + " created successfully."));
+        else if (success == 1)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("failed", "username: " + userDTO.getUsername() + " already exists"));
+        else if (success == 2)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("failed", "password must be at least 4 characters long"));
+        else
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("failed", "something went wrong, please try again later"));
     }
 
-    @GetMapping("hello")
-    public String helloWorld() {
-        return "Hello World";
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody UserDTO userDTO) {
+        TokenDTO tokenDTO = userService.loginUser(userDTO.getUsername(), userDTO.getPassword());
+        if (tokenDTO == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    Map.of("error", "username or password is incorrect")
+            );
+        return ResponseEntity.ok(Map.of("username", userDTO.getUsername(),
+                "token", tokenDTO.getJwtToken(), "expiresIn:", tokenDTO.getJwtExpiration()));
     }
 }
