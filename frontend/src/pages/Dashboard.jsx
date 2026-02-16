@@ -49,7 +49,24 @@ const Dashboard = () => {
     } else {
       alert("Upload failed!");
     }
-  }
+  };
+
+  const downloadBookmarks = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${BACKEND_URL}/api/bookmarks/download`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}`}
+    });
+    if (!response.ok) {
+      alert("Download failed!");
+    }
+    const res = await response.text();
+    const blob = new Blob([res], { type: "text/html" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "bookmarks.html";
+    link.click();
+  };
 
   const filteredBookmarks = bookmarks.filter(b => 
     (b.title?.toLowerCase() ?? "").includes(search.toLowerCase()) || 
@@ -69,7 +86,7 @@ const Dashboard = () => {
     } else if (response.status === 403 || response.status === 401) {
       handleLogout();
     }
-  }
+  };
 
   const deleteAllBookmarks = async () => {
     const token = localStorage.getItem("token");
@@ -80,11 +97,11 @@ const Dashboard = () => {
       },
     });
     if (response.ok) {
-      setBookmarks([]);
+      fetchBookmarks();
     } else if (response.status === 403 || response.status === 401) {
       handleLogout();
     }
-  }
+  };
 
   const deleteAccount = async () => {
     const token = localStorage.getItem("token");
@@ -99,7 +116,7 @@ const Dashboard = () => {
     } else if (response.status === 403 || response.status === 401) {
       handleLogout();
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
@@ -115,6 +132,9 @@ const Dashboard = () => {
             onChange={uploadBookmarks} 
           />
           <button onClick={() => {document.getElementById('fileInput').click()}} className="btn btn-ghost btn-sm">Import Bookmarks</button>
+        </div>
+        <div className="flex-none gap-2">
+          <button onClick={downloadBookmarks} className="btn btn-ghost btn-sm">Download Bookmarks</button>
         </div>
         <div className="flex-none gap-2">
           <button onClick={deleteAllBookmarks} className="btn btn-ghost btn-sm">Delete All Bookmarks</button>
@@ -169,9 +189,9 @@ const Dashboard = () => {
                             </a>
                           </td>
                           <td className="text-right">
-                            <button className="btn btn-square btn-ghost btn-sm text-blue-500 m-1">
+                            {/* <button className="btn btn-square btn-ghost btn-sm text-blue-500 m-1">
                                 Edit
-                            </button>
+                            </button> */}
                             <button className="btn btn-square btn-ghost btn-sm text-error m-1"
                               onClick={() => deleteBookmark(b.bookmarkId)}
                             >
