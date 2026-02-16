@@ -31,7 +31,7 @@ public class BookmarkService {
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         List<Bookmark> bookmarks = bookmarkRepository.findAllByUserId(user.getId());
-        return bookmarks.stream().map(bm -> new BookmarkDTO(bm.getBookmarkName(), bm.getBookmarkLink()))
+        return bookmarks.stream().map(bm -> new BookmarkDTO(bm.getBookmarkId(), bm.getBookmarkName(), bm.getBookmarkLink()))
                 .toList();
     }
 
@@ -49,7 +49,7 @@ public class BookmarkService {
                 String title = link.text();
                 if (title.isEmpty())
                     title = "unnamed title";
-                newBookmarks.add(new Bookmark(user.getId(), title, href));
+                newBookmarks.add(new Bookmark(user.getId(), href, title));
             }
             bookmarkRepository.saveAll(newBookmarks);
         } catch (IOException e) {

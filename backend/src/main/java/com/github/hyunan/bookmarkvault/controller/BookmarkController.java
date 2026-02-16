@@ -39,7 +39,6 @@ public class BookmarkController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
-
     }
 
     @PostMapping("/upload")
@@ -49,7 +48,7 @@ public class BookmarkController {
         String token = bearerToken.substring("Bearer ".length());
         try {
             bookmarkService.uploadBookmarks(file, jwtService.extractUsernameFromToken(token));
-            return ResponseEntity.ok().body(Map.of("success", "bookmarks were successfully uploaded"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("success", "bookmarks were successfully uploaded"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "something went wrong while uploading"));
         }
@@ -78,7 +77,7 @@ public class BookmarkController {
         String token = bearerToken.substring("Bearer ".length());
         try {
             bookmarkService.removeAllBookmarks(jwtService.extractUsernameFromToken(token));
-            return ResponseEntity.ok().body(Map.of("success", "user's bookmarks all deleted"));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Map.of("success", "user's bookmarks all deleted"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
@@ -91,7 +90,7 @@ public class BookmarkController {
         String token = bearerToken.substring("Bearer ".length());
         try {
             bookmarkService.removeBookmark(jwtService.extractUsernameFromToken(token), bookmarkId);
-            return ResponseEntity.ok().body(Map.of("success", "bookmark successfully deleted"));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Map.of("success", "bookmark successfully deleted"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
@@ -104,7 +103,7 @@ public class BookmarkController {
         String token = bearerToken.substring("Bearer ".length());
         try {
             bookmarkService.addBookmark(jwtService.extractUsernameFromToken(token), bookmarkDTO);
-            return ResponseEntity.ok().body(Map.of("success", "added bookmark"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("success", "added bookmark"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
         }
